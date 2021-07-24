@@ -1,13 +1,23 @@
 package com.bridgelabz.addressbook;
 
+import com.opencsv.bean.CsvBindByPosition;
+
 public class Contact {
+	@CsvBindByPosition(position = 0)
 	 private String firstName;
+	@CsvBindByPosition(position = 1)
 	 private String lastname;
+	@CsvBindByPosition(position = 2)
 	 private String address;
+	@CsvBindByPosition(position = 3)
 	 private String city;
+	@CsvBindByPosition(position = 4)
 	 private String state;
+	@CsvBindByPosition(position = 5)
 	 private String zip;
+	@CsvBindByPosition(position = 6)
 	 private int phoneNumber;
+	@CsvBindByPosition(position = 7)
 	 private String email;
 	 
 	public Contact() {
@@ -17,8 +27,8 @@ public class Contact {
 
 	@Override
 	public String toString() {
-		return "Contact [firstName=" + firstName + ", lastname=" + lastname + ", address=" + address + ", city=" + city
-				+ ", state=" + state + ", zip=" + zip + ", phoneNumber=" + phoneNumber + ", email=" + email + "]";
+		return "firstName=" + firstName + ", lastname=" + lastname + ", address=" + address + ", city=" + city
+				+ ", state=" + state + ", zip=" + zip + ", phoneNumber=" + phoneNumber + ", email=" + email ;
 	}
 
 	public String getFirstName() {
@@ -73,16 +83,17 @@ public class Contact {
 		return phoneNumber;
 	}
 
-	public void setPhoneNumber(int phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
 	public String getEmail() {
 		return email;
 	}
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public void setPhoneNumber(int phoneNumber) {
+		this.phoneNumber = phoneNumber;
+		
 	}
 
 

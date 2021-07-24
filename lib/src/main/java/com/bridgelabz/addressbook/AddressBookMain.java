@@ -10,7 +10,7 @@ public class AddressBookMain
 		System.out.println("Welcome to Address Book");
 		AddressBookService addressBook = new AddressBookService();
 		while (true) {
-			System.out.println("Enter what you have to do");
+			System.out.println("\n Enter what you have to do");
 			System.out.println(""
 					+ " 1 Add Contact "
 					+ "\n 2 Edit Contact "
@@ -22,8 +22,10 @@ public class AddressBookMain
 					+ "\n 8 Sort contact on basis of Person name "
 					+ "\n 9 Sort On the basis of city,state or Zip"
 					+ "\n 10 write data to file"
-					+ "\n 11 read file"
-					+ "\n 12 Quit"
+					+ "\n 11 read file "
+					+ "\n 12 write in csv file "
+					+ "\n 13 read from csv"
+					+ "\n 14 Quit"
 					);
 
 			int userChoice = scanner.nextInt();
@@ -89,8 +91,16 @@ public class AddressBookMain
 			case 11:
 				addressBook.readFile();
 				break;
-
+				
 			case 12:
+				addressBook.writeToCsv();
+				break;
+
+			case 13:
+				addressBook.readFromCsvFile();
+				break;
+
+			case 14:
 				System.out.println("Thanks For Using Us");
 				System.exit(0);
 				break;
