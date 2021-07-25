@@ -24,8 +24,10 @@ public class AddressBookMain
 					+ "\n 10 write data to file"
 					+ "\n 11 read file "
 					+ "\n 12 write in csv file "
-					+ "\n 13 read from csv"
-					+ "\n 14 Quit"
+					+ "\n 13 read from csv file"
+					+ "\n 14 write in json file "
+					+ "\n 15 read from json file"
+					+ "\n 16 Quit"
 					);
 
 			int userChoice = scanner.nextInt();
@@ -99,8 +101,13 @@ public class AddressBookMain
 			case 13:
 				addressBook.readFromCsvFile();
 				break;
-
 			case 14:
+				addressBook.writeToJson();
+				break;
+			case 15:
+				addressBook.readFromJson();
+				break;
+			case 16:
 				System.out.println("Thanks For Using Us");
 				System.exit(0);
 				break;

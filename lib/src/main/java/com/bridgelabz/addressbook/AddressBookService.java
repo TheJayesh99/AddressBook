@@ -1,21 +1,25 @@
 package com.bridgelabz.addressbook;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import com.google.gson.Gson;
 import com.opencsv.CSVWriter;
-import com.opencsv.bean.ColumnPositionMappingStrategy;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.StatefulBeanToCsv;
@@ -32,6 +36,7 @@ public class AddressBookService
 	public static final String FILE_PATH="c://Users//malij//OneDrive//Desktop";
 	public static final String TEXT_FILE="/addressBook.txt";
 	public static final String CSV_FILE="/addressBook.csv";
+	public static final String JSON_FILE="/addressBook.json";
 	//method to add contacts
 	public Contact addContact()
 	{
@@ -322,6 +327,7 @@ public class AddressBookService
 			});
 			beanToCsv.write(ContactList);  //writing all the contact which is in contact list
 			writer.close(); 
+			System.out.println("Written sucessfully");
 		}
 		catch (CsvDataTypeMismatchException e) 
 		{
@@ -340,29 +346,85 @@ public class AddressBookService
 	//reading data from csv file
 	public void readFromCsvFile() 
 	{
-		Reader reader;
-		try {
-			reader = Files.newBufferedReader(Paths.get(FILE_PATH+CSV_FILE));   //reader to read contacts
-			CsvToBean<Contact> csvToBean = new CsvToBeanBuilder(reader)
-                    .withType(Contact.class)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .build();
-			List<Contact> contacts = csvToBean.parse();   //Converting them to list
+		List<Contact> contacts = getContentOfCsv();
+		for(Contact contact: contacts) {
+			System.out.println("Name : " + contact.getFirstName()+" "+contact.getLastname());
+			System.out.println("Email : " + contact.getEmail());
+			System.out.println("PhoneNo : " + contact.getPhoneNumber());
+			System.out.println("Address : " + contact.getAddress());
+			System.out.println("State : " + contact.getState());			    
+			System.out.println("City : " + contact.getCity());
+			System.out.println("Zip : " + contact.getZip());
+			System.out.println("==========================");
+		}
+	}
 
-			for(Contact contact: contacts) {
-			    System.out.println("Name : " + contact.getFirstName()+" "+contact.getLastname());
-			    System.out.println("Email : " + contact.getEmail());
-			    System.out.println("PhoneNo : " + contact.getPhoneNumber());
-			    System.out.println("Address : " + contact.getAddress());
-			    System.out.println("State : " + contact.getState());			    
-			    System.out.println("City : " + contact.getCity());
-			    System.out.println("Zip : " + contact.getZip());
-			    System.out.println("==========================");
+	public void writeToJson() 
+	{
+		List<Contact> contacts = getContentOfCsv();
+		Gson gson = new Gson();
+		String json = gson.toJson(contacts);
+		try 
+		{
+			FileWriter writer = new FileWriter(FILE_PATH+JSON_FILE);
+			writer.write(json);
+			writer.close();
+			System.out.println("Written sucessfully");
+		} 
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+	}
+
+
+	public void readFromJson() 
+	{
+		try 
+		{
+			Gson gson = new Gson();
+			//creating a buffer reader to read data form file
+			BufferedReader br = new BufferedReader(new FileReader(FILE_PATH+JSON_FILE));
+			//reading contacts from json file
+			Contact[] contacts = gson.fromJson(br,Contact[].class);
+			List<Contact> contactsList = Arrays.asList(contacts);
+			for(Contact contact: contactsList) {
+				System.out.println("Name : " + contact.getFirstName()+" "+contact.getLastname());
+				System.out.println("Email : " + contact.getEmail());
+				System.out.println("PhoneNo : " + contact.getPhoneNumber());
+				System.out.println("Address : " + contact.getAddress());
+				System.out.println("State : " + contact.getState());			    
+				System.out.println("City : " + contact.getCity());
+				System.out.println("Zip : " + contact.getZip());
+				System.out.println("==========================");
 			}
+		}
+		catch (FileNotFoundException e) 
+		{
+			e.printStackTrace();
+		} 
+	}
+
+	//extract the content of csv files
+	private List<Contact> getContentOfCsv() 
+	{
+		try 
+		{
+			Reader reader = Files.newBufferedReader(Paths.get(FILE_PATH+CSV_FILE));   //reader to read contacts
+			CsvToBean<Contact> csvToBean = new CsvToBeanBuilder<Contact>(reader)
+					.withType(Contact.class)
+					.withIgnoreLeadingWhiteSpace(true)
+					.build();
+			return csvToBean.parse();   //Converting them to list
+			
 		}
 		catch (IOException e)
 		{
 			e.printStackTrace();
 		}
+		return null;
 	}
+	
+
+	
 }
