@@ -1,5 +1,7 @@
 package com.bridgelabz.addressbook;
 
+import java.util.Objects;
+
 import com.opencsv.bean.CsvBindByPosition;
 
 public class Contact {
@@ -120,6 +122,22 @@ public class Contact {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Contact other = (Contact) obj;
+		return Objects.equals(address, other.address) && Objects.equals(city, other.city)
+				&& Objects.equals(email, other.email) && Objects.equals(firstName, other.firstName) && id == other.id
+				&& Objects.equals(lastname, other.lastname) && phoneNumber == other.phoneNumber
+				&& Objects.equals(state, other.state) && Objects.equals(zip, other.zip);
 	}
 
 

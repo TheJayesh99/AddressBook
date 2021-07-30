@@ -448,6 +448,13 @@ public class AddressBookService
 	public List<Contact> readFromDataBase()
 	{
 		String query = "select * from addressbook;";
+		contactListDB = getQueryResult(query);
+		return contactListDB;
+	}
+
+	private List<Contact> getQueryResult(String query) 
+	{
+		List<Contact> contacts = new ArrayList<Contact>();
 		try(Connection connection = this.getConnection())
 		{
 			Statement statement = connection.createStatement();
@@ -463,14 +470,52 @@ public class AddressBookService
 				String zip= resultSet.getString("zip");
 				int phoneNumber= resultSet.getInt("phoneNumber");
 				String email = resultSet.getString("email");
-				contactListDB.add(new Contact(id,firstName, lastname, address, city, state, zip, phoneNumber, email));
+				contacts.add(new Contact(id,firstName, lastname, address, city, state, zip, phoneNumber, email));
 			}
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
-		return contactListDB;
+		return contacts;
+	}
+
+	//method to update contact
+	public void updateContactInDataBase(String name,int phoneNumber)
+	{
+		String sql = "update addressbook set phoneNumber = "+phoneNumber+" where first = '"+name+"';";
+		try(Connection connection = this.getConnection())
+		{
+			Statement statement = connection.createStatement();
+			int rowChanged = statement.executeUpdate(sql);
+			if (rowChanged == 1)
+			{
+				Contact contact = getContactFormList(name);
+				contact.setPhoneNumber(phoneNumber);
+			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	//check sync with database
+	public boolean checkSyncWithDB(String name) 
+	{
+		return getContactFromDatabase(name).get(0).equals(getContactFormList(name));
+	}
+	
+	//get particular contact from database
+	private List<Contact> getContactFromDatabase(String name) 
+	{
+		String sql = "select * from addressbook where first = '"+name+"'; "; 
+		return getQueryResult(sql);
+	}
+	//search a particular contact in list
+	private Contact getContactFormList(String name)
+	{
+		return contactListDB.stream().filter(contacts->contacts.getFirstName().equals(name)).findFirst().orElse(null);
 	}
 
 
