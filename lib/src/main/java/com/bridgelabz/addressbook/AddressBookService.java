@@ -517,11 +517,33 @@ public class AddressBookService
 	{
 		return contactListDB.stream().filter(contacts->contacts.getFirstName().equals(name)).findFirst().orElse(null);
 	}
-
+	
+	//method to find contact added after particular date
 	public List<Contact> getContatctsAddedAfterdate(String date)
 	{
 		String query = "Select  * from addressbook  Where date_added Between cast('"+date+"' as date) and date(now()) ;";
 		return getQueryResult(query); 
+	}
+
+	//method to find contacts having same city
+	public HashMap<String, Integer> getContactHaveSameCity()
+	{
+		HashMap<String, Integer> matches = new HashMap<String, Integer>();
+		try(Connection connection = this.getConnection())
+		{
+			String sql = " select city,count(city) from addressbook group by city; ";
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next())
+			{
+				matches.put(resultSet.getString(1),resultSet.getInt(2));
+			}
+		}
+		catch(SQLException e)
+		{
+			e.printStackTrace();
+		}
+		return matches;
 	}
 
 
