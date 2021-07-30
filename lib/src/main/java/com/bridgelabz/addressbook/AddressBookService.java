@@ -518,6 +518,12 @@ public class AddressBookService
 		return contactListDB.stream().filter(contacts->contacts.getFirstName().equals(name)).findFirst().orElse(null);
 	}
 
+	public List<Contact> getContatctsAddedAfterdate(String date)
+	{
+		String query = "Select  * from addressbook  Where date_added Between cast('"+date+"' as date) and date(now()) ;";
+		return getQueryResult(query); 
+	}
+
 
 
 

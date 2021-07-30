@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.bridgelabz.addressbook.AddressBookService;
 import com.bridgelabz.addressbook.Contact;
 
+
 public class AddressBookTesting 
 {
 	@Test
@@ -27,5 +28,13 @@ public class AddressBookTesting
 		addressBookService.readFromDataBase();
 		addressBookService.updateContactInDataBase("virat",4321);
 		assertTrue(addressBookService.checkSyncWithDB("virat"));
+	}
+	
+	@Test
+	public void givenAddressbookDB_WhenBetweenDates_ShouldReturnListOfContacts()
+	{		
+		AddressBookService addressBookService = new AddressBookService();
+		List<Contact> contactList  = addressBookService.getContatctsAddedAfterdate("2020-1-1");
+		assertEquals(3, contactList.size());
 	}
 }
