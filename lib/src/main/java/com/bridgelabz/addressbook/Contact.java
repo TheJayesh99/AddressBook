@@ -3,6 +3,7 @@ package com.bridgelabz.addressbook;
 import com.opencsv.bean.CsvBindByPosition;
 
 public class Contact {
+	private int id;
 	@CsvBindByPosition(position = 0)
 	 private String firstName;
 	@CsvBindByPosition(position = 1)
@@ -23,6 +24,21 @@ public class Contact {
 	public Contact() {
 		super();
 	
+	}
+
+	public Contact(int id, String firstName, String lastname, String address, String city, String state, String zip,
+			int phoneNumber, String email)
+	{
+		super();
+		this.id = id;
+		this.firstName = firstName;
+		this.lastname = lastname;
+		this.address = address;
+		this.city = city;
+		this.state = state;
+		this.zip = zip;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
 	}
 
 	@Override
@@ -94,6 +110,16 @@ public class Contact {
 	public void setPhoneNumber(int phoneNumber) {
 		this.phoneNumber = phoneNumber;
 		
+	}
+
+
+	public int getId() {
+		return id;
+	}
+
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 

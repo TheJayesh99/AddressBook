@@ -10,6 +10,11 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -37,6 +42,7 @@ public class AddressBookService
 	public static final String TEXT_FILE="/addressBook.txt";
 	public static final String CSV_FILE="/addressBook.csv";
 	public static final String JSON_FILE="/addressBook.json";
+	List<Contact> contactListDB = new ArrayList<>();
 	//method to add contacts
 	public Contact addContact()
 	{
@@ -416,7 +422,7 @@ public class AddressBookService
 					.withIgnoreLeadingWhiteSpace(true)
 					.build();
 			return csvToBean.parse();   //Converting them to list
-			
+
 		}
 		catch (IOException e)
 		{
@@ -425,6 +431,49 @@ public class AddressBookService
 		return null;
 	}
 	
+	//to establish connection with database
+	private Connection getConnection() throws SQLException 
+	{		
+		String jdbcURL = "jdbc:mysql://localhost:3306/addressbook_service?useSSL=false";
+		String username = "root";
+		String password = "Jayesh@13";
+		System.out.println("Conecting to database"+jdbcURL);
+		Connection connection = null;
+		connection = DriverManager.getConnection(jdbcURL,username,password);
+		System.out.println("Connection sucessful" + connection);
+		return connection;
+	}
 
-	
+	//read data from database
+	public List<Contact> readFromDataBase()
+	{
+		String query = "select * from addressbook;";
+		try(Connection connection = this.getConnection())
+		{
+			Statement statement = connection.createStatement();
+			ResultSet resultSet = statement.executeQuery(query);
+			while(resultSet.next())
+			{
+				int id = resultSet.getInt("id");
+				String firstName = resultSet.getString("first");
+				String lastname = resultSet.getString("last");
+				String address = resultSet.getString("address");
+				String city = resultSet.getString("city") ;
+				String state= resultSet.getString("state");
+				String zip= resultSet.getString("zip");
+				int phoneNumber= resultSet.getInt("phoneNumber");
+				String email = resultSet.getString("email");
+				contactListDB.add(new Contact(id,firstName, lastname, address, city, state, zip, phoneNumber, email));
+			}
+		}
+		catch (Exception e) 
+		{
+			e.printStackTrace();
+		}
+		return contactListDB;
+	}
+
+
+
+
 }
