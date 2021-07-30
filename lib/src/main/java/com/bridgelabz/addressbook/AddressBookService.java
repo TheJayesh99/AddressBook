@@ -430,7 +430,7 @@ public class AddressBookService
 		}
 		return null;
 	}
-	
+
 	//to establish connection with database
 	private Connection getConnection() throws SQLException 
 	{		
@@ -447,14 +447,16 @@ public class AddressBookService
 	//read data from database
 	public List<Contact> readFromDataBase()
 	{
-		String query = "select * from addressbook;";
+		String query = "select * from addressbook"
+				+ "       join ab_grp on (addressbook.id = ab_grp.id)"
+				+ "      join group_type on (ab_grp.gid =group_type.gid);";
 		contactListDB = getQueryResult(query);
 		return contactListDB;
 	}
 
 	private List<Contact> getQueryResult(String query) 
 	{
-		List<Contact> contacts = new ArrayList<Contact>();
+		List<Contact> contactslist = new ArrayList<Contact>();
 		try(Connection connection = this.getConnection())
 		{
 			Statement statement = connection.createStatement();
@@ -470,14 +472,27 @@ public class AddressBookService
 				String zip= resultSet.getString("zip");
 				int phoneNumber= resultSet.getInt("phoneNumber");
 				String email = resultSet.getString("email");
-				contacts.add(new Contact(id,firstName, lastname, address, city, state, zip, phoneNumber, email));
+				Contact contact =  contactslist.stream().filter(contacts -> contacts.getFirstName().equals(firstName)).findFirst().orElse(null);
+				if(contact != null)
+				{
+					List<String> group = contact.getGroups();
+					group.add(resultSet.getString("gname"));
+					contact.setGroups(group);
+				}
+				else
+				{
+					List<String> group = new ArrayList<String>(); 
+					group.add(resultSet.getString("gname"));					
+					contactslist.add(new Contact(id,firstName, lastname, address, city, state, zip, phoneNumber, email,group));
+				}	
+
 			}
 		}
 		catch (Exception e) 
 		{
 			e.printStackTrace();
 		}
-		return contacts;
+		return contactslist;
 	}
 
 	//method to update contact
@@ -499,17 +514,18 @@ public class AddressBookService
 			e.printStackTrace();
 		}
 	}
-	
+
 	//check sync with database
 	public boolean checkSyncWithDB(String name) 
 	{
 		return getContactFromDatabase(name).get(0).equals(getContactFormList(name));
 	}
-	
+
 	//get particular contact from database
 	private List<Contact> getContactFromDatabase(String name) 
 	{
-		String sql = "select * from addressbook where first = '"+name+"'; "; 
+		String sql = "select * from addressbook join ab_grp on (addressbook.id = ab_grp.id)"
+				+ "     join group_type on (ab_grp.gid =group_type.gid) where first = '"+name+"' ; "; 
 		return getQueryResult(sql);
 	}
 	//search a particular contact in list
@@ -517,7 +533,7 @@ public class AddressBookService
 	{
 		return contactListDB.stream().filter(contacts->contacts.getFirstName().equals(name)).findFirst().orElse(null);
 	}
-	
+
 	//method to find contact added after particular date
 	public List<Contact> getContatctsAddedAfterdate(String date)
 	{
@@ -544,6 +560,71 @@ public class AddressBookService
 			e.printStackTrace();
 		}
 		return matches;
+	}
+
+	//Method to add contact to database
+	public void insertContactInDataBase(String first, String last, String address, String city, String state, String zip, int phoneNumber, String email, List<String> groups)
+	{
+		Connection connection = null;
+		int id = 0;
+		try 
+		{
+			connection = getConnection();
+			connection.setAutoCommit(false);
+			Statement statement = connection.createStatement();
+
+			//adding data in address book
+			String query1 = "insert into addressBook (first,last,address,city,state,zip,phoneNumber,email)"
+					+ "  values('"+first+"','"+last+"','"+address+"','"+city+"','"+state+"','"+zip+"',"+phoneNumber+",'"+email+"');";
+			int rowsChanged =  statement.executeUpdate(query1,Statement.RETURN_GENERATED_KEYS);
+			if (rowsChanged ==1 )
+			{
+				ResultSet resultSet = statement.getGeneratedKeys();
+				if (resultSet.next())
+				{
+					id = resultSet.getInt(1);
+				}
+			}
+
+			//adding values in ab_dept table
+			for (String group : groups) 
+			{				
+				String query2 = " select gid from group_type where gname= '"+group+"';"; 
+				ResultSet resultSet = statement.executeQuery(query2);
+				if (resultSet.next())
+				{
+					int gid  = resultSet.getInt(1);
+					String query3 = "insert into ab_grp (id,gid) values ("+id+","+gid+");";
+					statement.executeUpdate(query3);
+				}
+			}
+			connection.commit();
+			contactListDB.add(new Contact(id, first, last, address, city, state, zip, phoneNumber, email, groups));
+			System.out.println(contactListDB);
+		} 
+		catch (Exception e) 
+		{
+			try 
+			{
+				connection.rollback();
+			} 
+			catch (SQLException e1)
+			{
+				e1.printStackTrace();
+			}
+	
+		}
+		finally
+		{
+			try
+			{
+				connection.close();
+			} 
+			catch (SQLException e) 
+			{
+				e.printStackTrace();
+			}
+		}
 	}
 
 

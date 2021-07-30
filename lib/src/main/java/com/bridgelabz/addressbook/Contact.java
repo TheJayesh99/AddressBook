@@ -1,5 +1,6 @@
 package com.bridgelabz.addressbook;
 
+import java.util.List;
 import java.util.Objects;
 
 import com.opencsv.bean.CsvBindByPosition;
@@ -22,15 +23,15 @@ public class Contact {
 	 private int phoneNumber;
 	@CsvBindByPosition(position = 7)
 	 private String email;
-	 
+	private List<String> groups;
+	
 	public Contact() {
 		super();
 	
 	}
 
 	public Contact(int id, String firstName, String lastname, String address, String city, String state, String zip,
-			int phoneNumber, String email)
-	{
+			int phoneNumber, String email, List<String> groups) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
@@ -41,12 +42,16 @@ public class Contact {
 		this.zip = zip;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
+		this.groups = groups;
 	}
+
+
 
 	@Override
 	public String toString() {
-		return "firstName=" + firstName + ", lastname=" + lastname + ", address=" + address + ", city=" + city
-				+ ", state=" + state + ", zip=" + zip + ", phoneNumber=" + phoneNumber + ", email=" + email ;
+		return "Contact [id=" + id + ", firstName=" + firstName + ", lastname=" + lastname + ", address=" + address
+				+ ", city=" + city + ", state=" + state + ", zip=" + zip + ", phoneNumber=" + phoneNumber + ", email="
+				+ email + ", groups=" + groups + "]";
 	}
 
 	public String getFirstName() {
@@ -125,6 +130,14 @@ public class Contact {
 	}
 
 
+	public List<String> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<String> groups) {
+		this.groups = groups;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -135,9 +148,10 @@ public class Contact {
 			return false;
 		Contact other = (Contact) obj;
 		return Objects.equals(address, other.address) && Objects.equals(city, other.city)
-				&& Objects.equals(email, other.email) && Objects.equals(firstName, other.firstName) && id == other.id
-				&& Objects.equals(lastname, other.lastname) && phoneNumber == other.phoneNumber
-				&& Objects.equals(state, other.state) && Objects.equals(zip, other.zip);
+				&& Objects.equals(email, other.email) && Objects.equals(firstName, other.firstName)
+				&& Objects.equals(groups, other.groups) && id == other.id && Objects.equals(lastname, other.lastname)
+				&& phoneNumber == other.phoneNumber && Objects.equals(state, other.state)
+				&& Objects.equals(zip, other.zip);
 	}
 
 

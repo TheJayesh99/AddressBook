@@ -3,6 +3,7 @@ package com.bridgelabz.addressbooktest;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,5 +46,17 @@ public class AddressBookTesting
 		AddressBookService addressBookService = new AddressBookService();
 		HashMap<String, Integer> sameCity = addressBookService.getContactHaveSameCity();
 		assertEquals(2, sameCity.size());
+	}
+	
+	@Test
+	public void givenInsertEmployeeData_WhenInserted_shouldSyncWithDatabase() 
+	{
+		AddressBookService addressBookService = new AddressBookService();
+		addressBookService.readFromDataBase();
+		List<String> groups = new ArrayList<String>();
+		groups.add("family");
+		groups.add("friend");		
+		addressBookService.insertContactInDataBase("rohit","sharma","andheri","mumbai","maharashtra","123001",12390021,"rohit@sharma",groups);
+		assertTrue(addressBookService.checkSyncWithDB("rohit"));
 	}
 }
